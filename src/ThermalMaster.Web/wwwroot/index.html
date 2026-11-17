@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA INTELIGENTE DE MONITOREO Y CONTROL DE TEMPERATURA AMBIENTAL DHT22</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="scada-theme">
+    <!-- Contenedor Principal de la App -->
+    <div class="app-layout">
+        <!-- Sidebar de Navegación SCADA -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>THERMAL<span>MASTER</span></h2>
+                    <span class="tag">DHT22 SCADA • FASE 1</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">1. Dashboard</span>
+                </a>
+                <a href="#monitoring" class="nav-item" data-section="monitoring">
+                    <span class="nav-icon">📡</span>
+                    <span class="nav-label">2. Monitoreo Real</span>
+                </a>
+                <a href="#manual-control" class="nav-item" data-section="manual-control">
+                    <span class="nav-icon">🎮</span>
+                    <span class="nav-label">3. Control Manual</span>
+                </a>
+                <a href="#auto-control" class="nav-item" data-section="auto-control">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">4. Control Automático</span>
+                </a>
+                <a href="#charts" class="nav-item" data-section="charts">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">5. Gráficos Estadísticos</span>
+                </a>
+                <a href="#history" class="nav-item" data-section="history">
+                    <span class="nav-icon">📜</span>
+                    <span class="nav-label">6. Historial</span>
+                </a>
+                <a href="#reports" class="nav-item" data-section="reports">
+                    <span class="nav-icon">📑</span>
+                    <span class="nav-label">7. Reportes</span>
+                </a>
+                <a href="#settings" class="nav-item" data-section="settings">
+                    <span class="nav-icon">🔧</span>
+                    <span class="nav-label">8. Configuración</span>
+                </a>
+                <a href="#project-info" class="nav-item" data-section="project-info">
+                    <span class="nav-icon">ℹ️</span>
+                    <span class="nav-label">9. Info Proyecto</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status-indicator">
+                    <div class="status-pulse offline" id="pulseIndicator"></div>
+                    <div class="status-text">
+                        <span class="status-label">PUERTO COM</span>
+                        <strong class="status-value" id="sidebarComStatus">DESCONECTADO</strong>
+                    </div>
+                </div>
+                <div class="proteus-badge">
+                    <span class="proteus-icon">⚡</span>
+                    <span>Proteus 8.17 COMPIM</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Área de Contenido Principal -->
+        <main class="main-content">
+            <!-- Barra Superior SCADA -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1 class="page-title" id="pageTitle">Panel Principal de Climatización</h1>
+                    <span class="system-mode-badge mode-auto" id="topModeBadge">MODO: AUTOMÁTICO</span>
+                </div>
+                <div class="top-bar-right">
+                    <div class="live-clock">
+                        <span class="clock-icon">🕒</span>
+                        <span id="currentDate">--/--/----</span>
+                        <strong id="currentTime">00:00:00</strong>
+                    </div>
+                    <div class="connection-pill disconnected" id="connectionPill">
+                        <span class="pill-dot"></span>
+                        <span id="connectionPillText">Arduino: Desconectado</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Sección Activa: Dashboard -->
+            <div class="content-body" id="section-dashboard">
+                <!-- Banner Informativo de Fase 1 Corregida -->
+                <div class="phase-banner">
+                    <div class="banner-badge">FASE 1 CORREGIDA</div>
+                    <div class="banner-body">
+                        <strong>Arquitectura con Sensor DHT22, Relé Ventilador (D7), Relé Lámpara (D8) y LCD I2C (A4/A5)</strong>
+                        <p>Lógica automática de climatización: &lt;18°C Lámpara ON (Calor) | 18°C-28°C Zona Confort (Ambos OFF) | &gt;28°C Ventilador ON (Frío). La comunicación serial real se vinculará en la Fase 4 tras el montaje del circuito en Proteus (Fase 2) y el firmware en C++ (Fase 3).</p>
+                    </div>
+                </div>
+
+                <!-- Tarjetas de Telemetría Principal (KPI Grid) -->
+                <div class="kpi-grid">
+                    <!-- Tarjeta 1: Temperatura DHT22 -->
+                    <div class="kpi-card highlight-cyan">
+                        <div class="kpi-header">
+                            <span class="kpi-title">TEMPERATURA AMBIENTAL</span>
+                            <span class="kpi-tag">DHT22 (PIN D2)</span>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="temp-readout">
+                                <span class="temp-value" id="kpiTemp">--.-</span>
+                                <span class="temp-unit">°C</span>
+                            </div>
+                            <div class="temp-bar-container">
+                                <div class="temp-bar-fill" id="tempBarFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="status-chip normal" id="tempAlertChip">ESPERANDO SERIAL</span>
+                            <span class="limits-hint" id="limitsHint">Confort: 18.0°C - 28.0°C</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Humedad Relativa DHT22 -->
+                    <div class="kpi-card highlight-purple">
+                        <div class="kpi-header">
+                            <span class="kpi-title">HUMEDAD AMBIENTAL</span>
+                            <span class="kpi-tag">DHT22 (PIN D2)</span>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="temp-readout">
+                                <span class="temp-value text-purple" id="kpiHumidity">--.-</span>
+                                <span class="temp-unit text-purple">%</span>
+                            </div>
+                            <div class="temp-bar-container">
+                                <div class="hum-bar-fill" id="humBarFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="status-chip normal" id="humStatusChip">RANGO ÓPTIMO</span>
+                            <span class="limits-hint">Sensor Digital 1-Wire</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3: Ventilador (Relé D7) -->
+                    <div class="kpi-card highlight-blue">
+                        <div class="kpi-header">
+                            <span class="kpi-title">VENTILADOR (ENFRIAMIENTO)</span>
+                            <span class="kpi-tag">RELÉ PIN D7</span>
+                        </div>
+                        <div class="kpi-body fan-body">
+                            <div class="fan-icon-wrapper" id="fanWrapper">
+                                <svg class="fan-icon" viewBox="0 0 24 24" width="44" height="44" stroke="currentColor" stroke-width="2" fill="none">
+                                    <path d="M12 12c0-3 2.5-5 5-5s3 2.5 3 5-2.5 3-5 3c-1.5 0-3-.5-3-3z"/>
+                                    <path d="M12 12c-3 0-5-2.5-5-5s2.5-3 5-3 3 2.5 3 5c0 1.5-.5 3-3 3z"/>
+                                    <path d="M12 12c0 3-2.5 5-5 5s-3-2.5-3-5 2.5-3 5-3c1.5 0 3 .5 3 3z"/>
+                                    <path d="M12 12c3 0 5 2.5 5 5s-2.5 3-5 3-3-2.5-3-5c0-1.5.5-3 3-3z"/>
+                                    <circle cx="12" cy="12" r="2"/>
+                                </svg>
+                            </div>
+                            <div class="actuator-info">
+                                <div class="actuator-state" id="fanStatusText">APAGADO</div>
+                                <span class="subtext">Activa a &gt;28.0°C</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="status-chip offline" id="fanStateChip">STANDBY</span>
+                            <span class="limits-hint">Relé 5V / 10A</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4: Lámpara / Calefactor (Relé D8) -->
+                    <div class="kpi-card highlight-amber">
+                        <div class="kpi-header">
+                            <span class="kpi-title">LÁMPARA (CALEFACCIÓN)</span>
+                            <span class="kpi-tag">RELÉ PIN D8</span>
+                        </div>
+                        <div class="kpi-body lamp-body">
+                            <div class="lamp-icon-wrapper" id="lampWrapper">
+                                <svg class="lamp-icon" viewBox="0 0 24 24" width="44" height="44" stroke="currentColor" stroke-width="2" fill="none">
+                                    <path d="M9 18h6"/>
+                                    <path d="M10 22h4"/>
+                                    <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/>
+                                </svg>
+                            </div>
+                            <div class="actuator-info">
+                                <div class="actuator-state" id="lampStatusText">APAGADA</div>
+                                <span class="subtext">Activa a &lt;18.0°C</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="status-chip offline" id="lampStateChip">STANDBY</span>
+                            <span class="limits-hint">Relé 5V / 10A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Segunda Fila: Estado de Hardware y Enlace -->
+                <div class="kpi-grid secondary-grid">
+                    <!-- Tarjeta 5: Display LCD 16x2 I2C -->
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">PANTALLA LCD I2C</span>
+                            <span class="kpi-tag">A4 (SDA) / A5 (SCL)</span>
+                        </div>
+                        <div class="kpi-body">
+                            <div class="lcd-mock-screen">
+                                <div class="lcd-line">T:<span id="lcdTemp">--.-</span>C H:<span id="lcdHum">--.-</span>%</div>
+                                <div class="lcd-line">V:<span id="lcdFan">OFF</span> L:<span id="lcdLamp">OFF</span> <span id="lcdMode">[AUTO]</span></div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="subtext">Módulo PCF8574 (0x27)</span>
+                            <span class="status-chip normal">BUS I2C OK</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 6: Mínimos y Máximos -->
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">MÍN / MÁX TEMPERATURA</span>
+                            <span class="kpi-tag">HISTORIAL SESIÓN</span>
+                        </div>
+                        <div class="kpi-body minmax-body">
+                            <div class="minmax-item">
+                                <span class="minmax-label">MÍNIMA</span>
+                                <span class="minmax-value text-cyan" id="minTempDisplay">--.- °C</span>
+                                <span class="minmax-time" id="minTempTime">--:--:--</span>
+                            </div>
+                            <div class="minmax-divider"></div>
+                            <div class="minmax-item">
+                                <span class="minmax-label">MÁXIMA</span>
+                                <span class="minmax-value text-red" id="maxTempDisplay">--.- °C</span>
+                                <span class="minmax-time" id="maxTempTime">--:--:--</span>
+                            </div>
+                        </div>
+                        <div class="kpi-footer">
+                            <span class="subtext">Persistencia SQL Server</span>
+                            <button class="btn-xs" id="btnResetMinMax">Reiniciar</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 7: Enlace Proteus COMPIM -->
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">ENLACE SERIAL UART</span>
+                            <span class="kpi-tag">9600 BAUD (8-N-1)</span>
+                        </div>
+                        <div class="kpi-body link-body">
+                            <div class="link-route">
+                                <div class="node csharp-node">
+                                    <span class="node-title">ASP.NET Core</span>
+                                    <span class="node-port" id="csharpPortBadge">COM1</span>
+                                </div>
+                                <div class="route-pipe">
+                                    <span class="pipe-arrow">⇄</span>
+                                    <span class="pipe-label">com0com</span>
+                                </div>
+                                <div class="node proteus-node">
+                                    <span class="node-title">PROTEUS COMPIM</span>
+                                    <span class="node-port" id="proteusPortBadge">COM2</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kpi-footer" style="flex-wrap:wrap; gap:8px;">
+                            <span class="status-chip offline" id="linkStatusChip">SIN ENLACE SERIAL</span>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                                <select id="serialPortSelect" title="Puerto COM" style="max-width:110px;"></select>
+                                <button class="btn-xs" id="btnConnectSerial">Conectar</button>
+                                <button class="btn-xs" id="btnDisconnectSerial">Desconectar</button>
+                                <button class="btn-xs" id="btnCheckPorts">Ver Puertos</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fila de Gráfico y Consola de Control SCADA -->
+                <div class="grid-2col">
+                    <!-- Gráfico en Tiempo Real -->
+                    <div class="panel-card chart-panel">
+                        <div class="panel-header">
+                            <div class="panel-title-group">
+                                <h3>Curva de Climatización en Tiempo Real</h3>
+                                <span class="subtext">Streaming por SignalR WebSockets</span>
+                            </div>
+                            <div class="panel-actions">
+                                <span class="chart-legend-item"><span class="legend-color cyan"></span> Temp (°C)</span>
+                                <span class="chart-legend-item"><span class="legend-color purple"></span> Hum (%)</span>
+                                <span class="chart-legend-item"><span class="legend-color red"></span> Calefacción (&lt;18°C)</span>
+                                <span class="chart-legend-item"><span class="legend-color blue"></span> Ventilación (&gt;28°C)</span>
+                            </div>
+                        </div>
+                        <div class="panel-body chart-body" style="position:relative;">
+                            <canvas id="thermalChart" height="260"></canvas>
+                            <div class="chart-empty-state" id="chartEmptyState">
+                                <span class="empty-icon">📊</span>
+                                <p>Esperando telemetría para graficar temperatura y humedad en vivo...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel de Control de Actuadores -->
+                    <div class="panel-card controls-panel">
+                        <div class="panel-header">
+                            <div class="panel-title-group">
+                                <h3>Control de Actuadores (Ventilador y Lámpara)</h3>
+                                <span class="subtext">Comandos seriales reales con confirmación ACK</span>
+                            </div>
+                        </div>
+                        <div class="panel-body controls-body">
+                            <!-- Selector de Modo -->
+                            <div class="control-group">
+                                <label class="control-label">Modo Operativo:</label>
+                                <div class="mode-toggle-group">
+                                    <button class="btn-mode active" id="btnModeAuto" data-mode="AUTO">
+                                        AUTOMÁTICO
+                                    </button>
+                                    <button class="btn-mode" id="btnModeManual" data-mode="MANUAL">
+                                        MANUAL
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Control Manual de Ventilador -->
+                            <div class="control-group">
+                                <label class="control-label">Ventilador (Relé Pin D7):</label>
+                                <div class="btn-dual-grid">
+                                    <button class="btn-action btn-fan-on" id="btnFanOn" disabled>
+                                        <span class="btn-icon">⚡</span> ENCENDER VENTILADOR
+                                    </button>
+                                    <button class="btn-action btn-fan-off" id="btnFanOff" disabled>
+                                        <span class="btn-icon">🛑</span> APAGAR VENTILADOR
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Control Manual de Lámpara -->
+                            <div class="control-group">
+                                <label class="control-label">Lámpara / Calefactor (Relé Pin D8):</label>
+                                <div class="btn-dual-grid">
+                                    <button class="btn-action btn-lamp-on" id="btnLampOn" disabled>
+                                        <span class="btn-icon">💡</span> ENCENDER LÁMPARA
+                                    </button>
+                                    <button class="btn-action btn-lamp-off" id="btnLampOff" disabled>
+                                        <span class="btn-icon">🌑</span> APAGAR LÁMPARA
+                                    </button>
+                                </div>
+                                <span class="control-help" id="manualNotice">
+                                    ⚠️ Active el Modo Manual para habilitar el accionamiento individual de relés.
+                                </span>
+                            </div>
+
+                            <!-- Umbrales de Temperatura -->
+                            <div class="control-group">
+                                <label class="control-label">Banda de Climatización (°C):</label>
+                                <div class="thresholds-inputs">
+                                    <div class="input-block">
+                                        <span>Lámpara ON (&lt;):</span>
+                                        <input type="number" id="inputMinThreshold" value="18.0" step="0.5" min="5" max="30">
+                                    </div>
+                                    <div class="input-block">
+                                        <span>Ventilador ON (&gt;):</span>
+                                        <input type="number" id="inputMaxThreshold" value="28.0" step="0.5" min="20" max="50">
+                                    </div>
+                                    <button class="btn-primary" id="btnSaveThresholds">Aplicar</button>
+                                </div>
+                            </div>
+                            <!-- Simulaci�n desde navegador -->
+                            <div class="control-group">
+                                <label class="control-label">Simulaci�n de Sensores (Navegador):</label>
+                                <div class="thresholds-inputs">
+                                    <div class="input-block">
+                                        <span>Temp (�C):</span>
+                                        <input type="number" id="simTemp" value="25.0" step="0.1">
+                                    </div>
+                                    <div class="input-block">
+                                        <span>Humedad (%):</span>
+                                        <input type="number" id="simHum" value="50.0" step="0.1" min="0" max="100">
+                                    </div>
+                                    <button class="btn-primary" id="btnSimulateTelemetry">Aplicar Simulaci�n</button>
+                                </div>
+                                <span class="control-help">
+                                    Inyección explícita desde navegador (no sustituye lecturas reales del DHT22/Proteus). En modo AUTO se calculan actuadores: FRÍO &lt;18°C, NORMAL 18-28°C, CALOR &gt;28°C, ALARMA &gt;=36°C.
+                                </span>
+                            </div>
+
+                            <!-- Consola de Comandos Seriales -->
+                            <div class="control-group">
+                                <label class="control-label">Consola de Comunicación Serial UART:</label>
+                                <div class="serial-terminal" id="serialConsole">
+                                    <div class="term-line info">[SISTEMA] ThermalMaster SCADA inicializado.</div>
+                                    <div class="term-line info">[SENSOR] DHT22 configurado en Pin Digital D2 (Temp + Humedad).</div>
+                                    <div class="term-line info">[ACTUADORES] Relé Ventilador en D7 | Relé Lámpara en D8.</div>
+                                    <div class="term-line info">[DISPLAY] LCD 16x2 I2C configurado en A4 (SDA) y A5 (SCL).</div>
+                                    <div class="term-line warning">[SERIAL] Puerto COM Desconectado (En espera de Fase 4 y Proteus).</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Otras Vistas del Menú -->
+            <div class="content-body hidden" id="section-monitoring">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>2. Monitoreo Detallado de Sensores DHT22</h3></div>
+                    <div class="panel-body"><p>Inspección de tramas digitales 1-Wire, tiempos de respuesta y cálculo de punto de rocío.</p></div>
+                </div>
+            </div>
+
+            <div class="content-body hidden" id="section-manual-control">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>3. Consola de Control Manual Avanzado</h3></div>
+                    <div class="panel-body"><p>Pruebas de conmutación de los relés en pines D7 y D8 con enclavamiento de seguridad.</p></div>
+                </div>
+            </div>
+
+            <div class="content-body hidden" id="section-auto-control">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>4. Parámetros del Algoritmo Automático</h3></div>
+                    <div class="panel-body"><p>Ajuste de banda de histéresis (±1.0°C) y zonas de histéresis térmica.</p></div>
+                </div>
+            </div>
+
+            <div class="content-body hidden" id="section-charts">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>5. Análisis Gráfico y Estadístico</h3></div>
+                    <div class="panel-body"><p>Correlación de temperatura y humedad en el tiempo.</p></div>
+                </div>
+            </div>
+
+            <div class="content-body hidden" id="section-history">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>6. Historial de Registros en SQL Server</h3></div>
+                    <div class="panel-body"><p>Consulta de registros en la tabla [SensorReadings] con temperatura, humedad y estados de relé.</p></div>
+                </div>
+            </div>
+
+            <div class="content-body hidden" id="section-reports">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>7. Generación de Reportes de Climatización</h3></div>
+                    <div class="panel-body"><p>Exportación de resúmenes de confort ambiental.</p></div>
+                </div>
+            </div>
+
+            <div class="content-body hidden" id="section-settings">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>8. Configuración de Hardware y Base de Datos</h3></div>
+                    <div class="panel-body"><p>Configuración de puerto COM1, baudrate 9600 y cadena de conexión SQL Server.</p></div>
+                </div>
+            </div>
+
+            <div class="content-body hidden" id="section-project-info">
+                <div class="panel-card">
+                    <div class="panel-header"><h3>9. Información Técnica del Proyecto</h3></div>
+                    <div class="panel-body">
+                        <h4>SISTEMA INTELIGENTE DE MONITOREO Y CONTROL DE TEMPERATURA Y HUMEDAD AMBIENTAL</h4>
+                        <p><strong>Sensor:</strong> DHT22 Digital (Pin D2)</p>
+                        <p><strong>Actuador 1:</strong> Ventilador mediante Relé (Pin D7)</p>
+                        <p><strong>Actuador 2:</strong> Lámpara mediante Relé (Pin D8)</p>
+                        <p><strong>Pantalla:</strong> LCD 16x2 I2C (Pines A4 / A5)</p>
+                        <p><strong>Simulación:</strong> Proteus 8.17 + COMPIM</p>
+                        <p><strong>Backend:</strong> C# ASP.NET Core (.NET 10) + SignalR</p>
+                        <p><strong>Base de Datos:</strong> SQL Server</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

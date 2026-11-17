@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ThermalMaster.Core/ThermalMaster.Core.csproj" />
+    <Project Path="src/ThermalMaster.Infrastructure/ThermalMaster.Infrastructure.csproj" />
+    <Project Path="src/ThermalMaster.Web/ThermalMaster.Web.csproj" />
+  </Folder>
+</Solution>

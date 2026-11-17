@@ -1,0 +1,15 @@
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\bin\Debug\net10.0\ThermalMaster.Infrastructure.deps.json
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\bin\Debug\net10.0\ThermalMaster.Infrastructure.dll
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\bin\Debug\net10.0\ThermalMaster.Infrastructure.pdb
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\bin\Debug\net10.0\ThermalMaster.Core.dll
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\bin\Debug\net10.0\ThermalMaster.Core.pdb
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalMaster.Infrastructure.csproj.AssemblyReference.cache
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalMaster.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalMaster.Infrastructure.AssemblyInfoInputs.cache
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalMaster.Infrastructure.AssemblyInfo.cs
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalMaster.Infrastructure.csproj.CoreCompileInputs.cache
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalM.821D285E.Up2Date
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalMaster.Infrastructure.dll
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\refint\ThermalMaster.Infrastructure.dll
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ThermalMaster.Infrastructure.pdb
+C:\xampp2\htdocs\EXAMEN DE IAR-600\src\ThermalMaster.Infrastructure\obj\Debug\net10.0\ref\ThermalMaster.Infrastructure.dll
